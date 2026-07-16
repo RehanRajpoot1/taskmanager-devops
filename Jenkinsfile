@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'your-dockerhub-username'   // <-- change this
+        DOCKERHUB_USER = 'rehanrajpoot'   // <-- change this
         BACKEND_IMAGE  = "${DOCKERHUB_USER}/taskmanager-backend"
         FRONTEND_IMAGE = "${DOCKERHUB_USER}/taskmanager-frontend"
         IMAGE_TAG      = "${env.BUILD_NUMBER}"
