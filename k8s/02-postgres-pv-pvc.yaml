@@ -1,0 +1,31 @@
+# PersistentVolume: represents actual storage on the node (hostPath here, since
+# this is a single-node Minikube cluster). In real cloud clusters this would
+# typically be backed by AWS EBS, GCE PD, etc.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data/postgres
+---
+# PersistentVolumeClaim: how the Postgres pod "requests" storage.
+# Kubernetes binds this claim to a PV that satisfies the request.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: taskmanager
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 1Gi
