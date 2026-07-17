@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: rehanrajpoot/taskmanager-backend:latest   # <-- update tag on each deploy
+          image: rehanrajpoot/taskmanager-backend:11
           ports:
             - containerPort: 5000
           env:

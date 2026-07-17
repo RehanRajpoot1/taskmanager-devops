@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: rehanrajpoot/taskmanager-frontend:latest   # <-- update tag on each deploy
+          image: rehanrajpoot/taskmanager-frontend:11
           ports:
             - containerPort: 80
           readinessProbe:
