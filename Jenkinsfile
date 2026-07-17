@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'rehanrajpoot'   // <-- change this
+        DOCKERHUB_USER = 'rehanrajpoot'
         BACKEND_IMAGE  = "${DOCKERHUB_USER}/taskmanager-backend"
         FRONTEND_IMAGE = "${DOCKERHUB_USER}/taskmanager-frontend"
         IMAGE_TAG      = "${env.BUILD_NUMBER}"
@@ -45,8 +45,19 @@ pipeline {
 
         stage('Update K8s Manifests (GitOps)') {
             steps {
-                echo "Next phase: update image tag in manifests repo so ArgoCD can sync it."
-                // This stage will be filled in Phase 6 (ArgoCD/GitOps setup)
+                sh """
+                    sed -i "s|image: ${BACKEND_IMAGE}:.*|image: ${BACKEND_IMAGE}:${IMAGE_TAG}|g" k8s/05-backend-deployment-service.yaml
+                    sed -i "s|image: ${FRONTEND_IMAGE}:.*|image: ${FRONTEND_IMAGE}:${IMAGE_TAG}|g" k8s/06-frontend-deployment-service.yaml
+                """
+                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                    sh """
+                        git config user.email "jenkins@ci.local"
+                        git config user.name "Jenkins CI"
+                        git add k8s/05-backend-deployment-service.yaml k8s/06-frontend-deployment-service.yaml
+                        git commit -m "Update image tags to build ${IMAGE_TAG} [ci skip]" || echo "No changes to commit"
+                        git push https://\${GIT_USER}:\${GIT_TOKEN}@github.com/RehanRajpoot1/taskmanager-devops.git HEAD:main
+                    """
+                }
             }
         }
     }
